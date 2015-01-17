@@ -7,7 +7,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR})
 find_package(kodi REQUIRED)
 
 find_package(DirectX REQUIRED)
-set(DEPLIBS ${DIRECTX_D3DX9_LIBRARY} ${kodiplatform_LIBRARIES})
+set(DEPLIBS winmm.lib ${DIRECTX_D3DX9_LIBRARY} ${kodiplatform_LIBRARIES})
 
 include_directories(src/angelscript/include
                     src/core src/effects
