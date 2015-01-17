@@ -71,6 +71,7 @@ set(VORTEX_SOURCES src/VortexXBMC.cpp
                    src/effects/VoicePrint.cpp)
 
 add_definitions(-D_USRDLL -DVORTEX_EXPORTS -D_CRT_NONSTDC_NO_DEPRECATE)
+remove_definitions(-DNOMINMAX)
 
 build_addon(visualization.vortex VORTEX DEPLIBS)
 
