@@ -9,7 +9,8 @@ find_package(kodi REQUIRED)
 find_package(DirectX REQUIRED)
 set(DEPLIBS winmm.lib ${DIRECTX_D3DX9_LIBRARY} ${kodiplatform_LIBRARIES})
 
-include_directories(src/angelscript/include
+include_directories(src/angelscript/add_on
+                    src/angelscript/include
                     src/core src/effects
                     ${DIRECTX_INCLUDE_DIR}
                     ${KODI_INCLUDE_DIR}
