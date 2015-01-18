@@ -34,10 +34,10 @@
 using namespace std;
 
 #include "angelscript.h"
-#include "../../angelscript/add_on/scriptstring/scriptstring.h"
+#include "scriptstring.h"
 
 #include "DebugConsole.h"
-#include "../../../../addons/include/xbmc_vis_types.h"
+#include "kodi/xbmc_vis_types.h"
 
 // Effects
 #include "Map.h"
