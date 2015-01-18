@@ -1,1 +1,1 @@
-kodi-platform https://github.com/Montellese/kodi-platform fb876c7
+kodi-platform https://github.com/Montellese/kodi-platform d4571d8
