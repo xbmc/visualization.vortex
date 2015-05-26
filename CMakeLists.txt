@@ -6,15 +6,46 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR})
 
 find_package(kodi REQUIRED)
 
-find_package(DirectX REQUIRED)
-set(DEPLIBS winmm.lib ${DIRECTX_D3DX9_LIBRARY} ${kodiplatform_LIBRARIES})
+set(DEPLIBS winmm.lib ${kodiplatform_LIBRARIES})
 
 include_directories(src/angelscript/add_on
                     src/angelscript/include
-                    src/core src/effects
-                    ${DIRECTX_INCLUDE_DIR}
+                    src/core src/effects src/shaders
                     ${KODI_INCLUDE_DIR}
                     ${kodiplatform_INCLUDE_DIRS})
+
+set( SHADER_FILES src/shaders/ColorPixelShader.hlsl
+                  src/shaders/ColourRemapPixelShader.hlsl
+                  src/shaders/DiffuseNormalEnvCubeVertexShader.hlsl
+                  src/shaders/DiffuseUVCubeVertexShader.hlsl
+                  src/shaders/DiffuseUVEnvCubeVertexShader.hlsl
+                  src/shaders/DiffuseUVEnvVertexShader.hlsl
+                  src/shaders/DiffuseUVVertexShader.hlsl
+                  src/shaders/TexturePixelShader.hlsl
+                  src/shaders/UVNormalEnvVertexShader.hlsl )
+set( SHADER_INCLUDES )
+
+foreach( SHADER_FILE ${SHADER_FILES} )
+  get_filename_component( FileName ${SHADER_FILE} NAME_WE )
+  if(${FileName} MATCHES "(.+Vertex.+)")
+    set(ShaderType vs)
+  elseif(${FileName} MATCHES "(.+Pixel.+)")
+    set(ShaderType ps)
+  else()
+    message(FATAL_ERROR "Unknown shader type.")
+  endif()
+  set( IncFile src/shaders/${FileName}.inc )
+  list( APPEND SHADER_INCLUDES ${IncFile} )
+
+  add_custom_command(
+    OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/${IncFile}
+    COMMAND fxc /E Main /nologo /T${ShaderType}_4_0_level_9_1 /Vn ${FileName}Code /Fh ${IncFile} ${SHADER_FILE} /I ${CMAKE_CURRENT_SOURCE_DIR}/src/shaders
+    DEPENDS ${SHADER_FILE} ${CMAKE_CURRENT_SOURCE_DIR}/src/shaders/constants_table.fx
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    VERBATIM)
+endforeach(SHADER_FILE)
+
+add_custom_target(generate ALL DEPENDS ${SHADER_INCLUDES})
 
 set(VORTEX_SOURCES src/VortexXBMC.cpp
                    src/angelscript/source/as_arrayobject.cpp
@@ -56,6 +87,8 @@ set(VORTEX_SOURCES src/VortexXBMC.cpp
                    src/angelscript/source/as_variablescope.cpp
                    src/angelscript/add_on/scriptstring.cpp
                    src/angelscript/add_on/scriptstring_utils.cpp
+                   src/core/CommonStates.cpp
+                   src/core/DDSTextureLoader.cpp
                    src/core/DebugConsole.cpp
                    src/core/EffectBase.cpp
                    src/core/fft.cpp
@@ -64,13 +97,17 @@ set(VORTEX_SOURCES src/VortexXBMC.cpp
                    src/core/Renderer.cpp
                    src/core/Shader.cpp
                    src/core/Texture.cpp
+                   src/core/TextureDX.cpp
                    src/core/Vortex.cpp
+                   src/core/WICTextureLoader.cpp
                    src/core/XmlDocument.cpp
+                   src/core/XMMatrixStack.cpp
                    src/effects/Map.cpp
                    src/effects/Tunnel.cpp
                    src/effects/VoicePrint.cpp)
 
 add_definitions(-D_USRDLL -DVORTEX_EXPORTS -D_CRT_NONSTDC_NO_DEPRECATE)
+add_definitions(-D_WIN32_WINNT=0x0600 -DNTDDI_VERSION=0x06000000 -D_WINDOWS)
 remove_definitions(-DNOMINMAX)
 
 build_addon(visualization.vortex VORTEX DEPLIBS)

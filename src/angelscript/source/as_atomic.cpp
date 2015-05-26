@@ -35,7 +35,7 @@
 //
 
 #include "as_atomic.h"
-#include "kodi/threads/atomics.h"
+#include "platform/threads/atomics.h"
 
 BEGIN_AS_NAMESPACE
 

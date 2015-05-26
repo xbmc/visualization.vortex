@@ -25,7 +25,6 @@
 #include "kodi/xbmc_vis_dll.h"
 #include "kodi/xbmc_addon_cpp_dll.h"
 
-
 Vortex* g_Vortex = NULL;
 
 // settings vector
@@ -39,7 +38,7 @@ extern "C" ADDON_STATUS ADDON_Create(void* hdl, void* props)
 	VIS_PROPS* visprops = (VIS_PROPS*)props;
 
 	g_Vortex = new Vortex;
-	g_Vortex->Init( ( LPDIRECT3DDEVICE9 )visprops->device, visprops->x, visprops->y, visprops->width, visprops->height, visprops->pixelRatio );
+  g_Vortex->Init((ID3D11DeviceContext*)visprops->device, visprops->x, visprops->y, visprops->width, visprops->height, visprops->pixelRatio);
 
 	return ADDON_STATUS_NEED_SAVEDSETTINGS;
 }

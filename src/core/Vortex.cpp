@@ -31,7 +31,6 @@
 #include "XmlDocument.h"
 
 #include <string>
-using namespace std;
 
 #include "angelscript.h"
 #include "scriptstring.h"
@@ -80,13 +79,13 @@ public:
 		Rating = pVisTrack->rating;
 	}
 
-	string Title;
-	string Artist;
-	string Album;
-	string AlbumArtist;
-	string Genre;
-	string Comment;
-	string Lyrics;
+	std::string Title;
+  std::string Artist;
+  std::string Album;
+  std::string AlbumArtist;
+  std::string Genre;
+  std::string Comment;
+  std::string Lyrics;
 
 	int        TrackNumber;
 	int        DiscNumber;
@@ -123,7 +122,7 @@ public:
 		}
 	}
 
-	void GetFiles( const string fileDir, const string fileExt )
+	void GetFiles( const std::string fileDir, const std::string fileExt )
 	{
 		if ( m_AllFilenames )
 		{
@@ -138,7 +137,7 @@ public:
 		}
 
 		m_Filenames.clear();
-		string path = fileDir + "*." + fileExt;
+    std::string path = fileDir + "*." + fileExt;
 
 		WIN32_FIND_DATA findData;
 		HANDLE hFind = FindFirstFile( path.c_str(), &findData );
@@ -197,7 +196,7 @@ public:
 	}
 
 private:
-	vector<string>	m_Filenames;
+  std::vector<std::string>	m_Filenames;
 	char*			m_AllFilenames;
 	char**			m_FilenameAddresses;
 };
@@ -211,10 +210,10 @@ namespace
 	Preset g_AnnouncePreset;
 	Preset* g_presets[2] = {&g_preset1, &g_preset2};
 
-	LPDIRECT3DTEXTURE9 g_currPresetTex;
-	LPDIRECT3DTEXTURE9 g_newPresetTex;
-	LPDIRECT3DTEXTURE9 g_albumArt = NULL;
-	LPDIRECT3DTEXTURE9 g_vortexLogo = NULL;
+  TextureDX* g_currPresetTex;
+  TextureDX* g_newPresetTex;
+  TextureDX* g_albumArt = NULL;
+	TextureDX* g_vortexLogo = NULL;
 
 	int g_renderTarget = 0;
 	int g_currPresetId = 0;
@@ -307,12 +306,12 @@ int GetRandomPreset()
 	return nextPreset;
 }
 
-void Vortex::Init( LPDIRECT3DDEVICE9 pD3DDevice, int iPosX, int iPosY, int iWidth, int iHeight, float fPixelRatio )
+void Vortex::Init( ID3D11DeviceContext* pD3DContext, int iPosX, int iPosY, int iWidth, int iHeight, float fPixelRatio)
 {
 	InitTime();
 
 	DebugConsole::Init();
-	Renderer::Init( pD3DDevice, iPosX, iPosY, iWidth, iHeight, fPixelRatio );
+	Renderer::Init( pD3DContext, iPosX, iPosY, iWidth, iHeight, fPixelRatio );
 	InitAngelScript();
 	g_fftobj.Init(576, NUM_FREQUENCIES);
 
@@ -1010,7 +1009,7 @@ void Vortex::Render()
 }
 
 // Function implementation with native calling convention
-void PrintString(string &str)
+void PrintString(std::string &str)
 {
 	DebugConsole::Log( str.c_str() );
 }
@@ -1018,7 +1017,7 @@ void PrintString(string &str)
 // Function implementation with generic script interface
 void PrintString_Generic(asIScriptGeneric *gen)
 {
-	string *str = (string*)gen->GetArgAddress(0);
+  std::string *str = (std::string*)gen->GetArgAddress(0);
 	DebugConsole::Log( str->c_str() );
 }
 
@@ -1210,8 +1209,7 @@ void SetEnvTexture(int textureId)
 		if ( g_albumArt /*&& g_useAlbumArt*/ )
 			Renderer::SetTexture( g_albumArt );
 		else
-			//			Renderer_c::SetTexture(g_vortexLogo);
-			Renderer::SetEnvTexture( NULL );
+      Renderer::SetEnvTexture( g_vortexLogo );
 	}
 	else
 	{
@@ -1250,12 +1248,13 @@ int IntClamp(int val, int min, int max)
 void SetEffectTexture( EffectBase& rEffect )
 {
 	Renderer::SetTexture( rEffect.GetTexture() );
+
 	rEffect.Release();
 }
 
 void SetEffectRenderTarget( EffectBase& rEffect )
 {
-	Renderer::SetRenderTarget( rEffect.GetRenderTarget() );
+	Renderer::SetRenderTarget( rEffect.GetTexture() );
 
 	rEffect.Release();
 }
@@ -1263,6 +1262,7 @@ void SetEffectRenderTarget( EffectBase& rEffect )
 void DrawMesh( Mesh& pMesh )
 {
 	Renderer::DrawMesh( pMesh.GetMesh() );
+
 	pMesh.Release();
 }
 
