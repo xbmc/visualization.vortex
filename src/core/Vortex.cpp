@@ -94,10 +94,11 @@ public:
 	char       Rating;
 };
 
-char g_TexturePath[ 512 ] = "special://xbmc/addons/visualization.vortex/resources/Textures/";
-char g_PresetPath[ 512 ] = "special://xbmc/addons/visualization.vortex/resources/Presets/";
-char g_TransitionPath[ 512 ] = "special://xbmc//addons/visualization.vortex/resources/Transitions/";
-char g_AnnouncePath[ 512 ] = "special://xbmc/addons/visualization.vortex/resources/Announcements/";
+char g_pluginPath[ MAX_PATH ];
+char g_TexturePath[ MAX_PATH ];
+char g_PresetPath[ MAX_PATH ];
+char g_TransitionPath[ MAX_PATH ];
+char g_AnnouncePath[ MAX_PATH ];
 
 class FileHolder
 {
@@ -306,9 +307,25 @@ int GetRandomPreset()
 	return nextPreset;
 }
 
+void Vortex::InitPaths(void)
+{
+	strcpy(g_TexturePath, g_pluginPath);
+	strcat(g_TexturePath, "/resources/Textures/");
+
+	strcpy(g_PresetPath, g_pluginPath);
+	strcat(g_PresetPath, "/resources/Presets/");
+
+	strcpy(g_TransitionPath, g_pluginPath);
+	strcat(g_TransitionPath, "/resources/Transitions/");
+
+	strcpy(g_AnnouncePath, g_pluginPath);
+	strcat(g_AnnouncePath, "/resources/Announcements/");
+}
+
 void Vortex::Init( ID3D11DeviceContext* pD3DContext, int iPosX, int iPosY, int iWidth, int iHeight, float fPixelRatio)
 {
 	InitTime();
+	InitPaths();
 
 	DebugConsole::Init();
 	Renderer::Init( pD3DContext, iPosX, iPosY, iWidth, iHeight, fPixelRatio );

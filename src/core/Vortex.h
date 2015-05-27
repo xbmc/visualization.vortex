@@ -74,6 +74,7 @@ public:
 	void SaveSettings();
 
 private:
+	void InitPaths(void);
 	bool InitAngelScript();
 	asIScriptEngine* m_pScriptEngine;
 };
