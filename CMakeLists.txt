@@ -5,13 +5,16 @@ cmake_minimum_required(VERSION 2.6)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR})
 
 find_package(kodi REQUIRED)
+find_package(platform REQUIRED)
+find_package(kodiplatform REQUIRED)
 
-set(DEPLIBS winmm.lib ${kodiplatform_LIBRARIES})
+set(DEPLIBS winmm.lib ${platform_LIBRARIES} ${kodiplatform_LIBRARIES})
 
 include_directories(src/angelscript/add_on
                     src/angelscript/include
                     src/core src/effects src/shaders
                     ${KODI_INCLUDE_DIR}
+                    ${platform_INCLUDE_DIRS}
                     ${kodiplatform_INCLUDE_DIRS})
 
 set( SHADER_FILES src/shaders/ColorPixelShader.hlsl
