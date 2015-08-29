@@ -17,19 +17,19 @@ include_directories(src/angelscript/add_on
                     ${platform_INCLUDE_DIRS}
                     ${kodiplatform_INCLUDE_DIRS})
 
-set( SHADER_FILES src/shaders/ColorPixelShader.hlsl
-                  src/shaders/ColourRemapPixelShader.hlsl
-                  src/shaders/DiffuseNormalEnvCubeVertexShader.hlsl
-                  src/shaders/DiffuseUVCubeVertexShader.hlsl
-                  src/shaders/DiffuseUVEnvCubeVertexShader.hlsl
-                  src/shaders/DiffuseUVEnvVertexShader.hlsl
-                  src/shaders/DiffuseUVVertexShader.hlsl
-                  src/shaders/TexturePixelShader.hlsl
-                  src/shaders/UVNormalEnvVertexShader.hlsl )
-set( SHADER_INCLUDES )
+set(SHADER_FILES src/shaders/ColorPixelShader.hlsl
+                 src/shaders/ColourRemapPixelShader.hlsl
+                 src/shaders/DiffuseNormalEnvCubeVertexShader.hlsl
+                 src/shaders/DiffuseUVCubeVertexShader.hlsl
+                 src/shaders/DiffuseUVEnvCubeVertexShader.hlsl
+                 src/shaders/DiffuseUVEnvVertexShader.hlsl
+                 src/shaders/DiffuseUVVertexShader.hlsl
+                 src/shaders/TexturePixelShader.hlsl
+                 src/shaders/UVNormalEnvVertexShader.hlsl)
+set(SHADER_INCLUDES )
 
-foreach( SHADER_FILE ${SHADER_FILES} )
-  get_filename_component( FileName ${SHADER_FILE} NAME_WE )
+foreach(SHADER_FILE ${SHADER_FILES})
+  get_filename_component(FileName ${SHADER_FILE} NAME_WE)
   if(${FileName} MATCHES "(.+Vertex.+)")
     set(ShaderType vs)
   elseif(${FileName} MATCHES "(.+Pixel.+)")
@@ -37,8 +37,8 @@ foreach( SHADER_FILE ${SHADER_FILES} )
   else()
     message(FATAL_ERROR "Unknown shader type.")
   endif()
-  set( IncFile src/shaders/${FileName}.inc )
-  list( APPEND SHADER_INCLUDES ${IncFile} )
+  set(IncFile src/shaders/${FileName}.inc)
+  list(APPEND SHADER_INCLUDES ${IncFile})
 
   add_custom_command(
     OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/${IncFile}
