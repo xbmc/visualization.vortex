@@ -20,6 +20,7 @@
 #include "Tunnel.h"
 #include "Renderer.h"
 #include "angelscript.h"
+#include <algorithm>
 
 struct TunnelParameters
 {
@@ -62,8 +63,8 @@ float ApplySinY(int i, float time)
 
 void RenderTunnel( TunnelParameters& tp )
 {
-	int TunnelLength = max( min( tp.TunnelLength, 100 ), 2 );
-	int CircleSegments = max( min( tp.CircleSegments, 30 ), 3 );
+	int TunnelLength = std::max( std::min( tp.TunnelLength, 100 ), 2 );
+	int CircleSegments = std::max( std::min( tp.CircleSegments, 30 ), 3 );
 
 // 	Renderer::RotateAxis(atanf((ApplySinX(3, tp.XCounter)-ApplySinX(0,tp.XCounter))/3.0f)*(180.0f/3.14159f), 0.0f, 1.0f, 0.0f);
 // 	Renderer::RotateAxis(atanf((ApplySinY(0,tp.YCounter)-ApplySinY(7, tp.YCounter))/7.0f)*(180.0f/3.14159f), 1.0f, 0.0f, 0.0f);

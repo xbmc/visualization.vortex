@@ -22,6 +22,7 @@
 #include "Shader.h"
 #include "angelscript.h"
 #include "CommonStates.h"
+#include <algorithm>
 
 namespace
 {
@@ -89,8 +90,8 @@ void VoicePrint::SetSpeed(float speed)
 	const float MIN_SPEED = 0.004f;
 	const float MAX_SPEED = 0.02f;
 
-	speed = min(speed, 1.0f);
-	speed = max(speed, 0.0f);
+	speed = std::min(speed, 1.0f);
+	speed = std::max(speed, 0.0f);
 
 	m_speed = MIN_SPEED + speed * (MAX_SPEED - MIN_SPEED);
 
@@ -110,8 +111,8 @@ void VoicePrint::Render()
     for (int i = 0; i < 512; i++)
     {
       int val = ((int)(GetSpecLeft(i) * 0.8f * 255.0f));
-      val = min(val, 255);
-      val = max(0, val);
+      val = std::min(val, 255);
+      val = std::max(0, val);
 
       float xVal = (m_minX * 255) + (val * (m_maxX - m_minX));
       float yVal = ((m_minY * 255) + (val * (m_maxY - m_minY)));

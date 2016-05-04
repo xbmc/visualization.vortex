@@ -27,6 +27,7 @@
 #include "DDSTextureLoader.h"
 #include "WICTextureLoader.h"
 #include "XMMatrixStack.h"
+#include <algorithm>
 
 using namespace DirectX;
 using namespace DirectX::PackedVector;
@@ -768,8 +769,8 @@ float Renderer::GetViewportWidth()
 //-----------------------------------------------------------------------------
 void Renderer::SetAspect(float aspect)
 {
-	aspect = min(aspect, 1);
-	aspect = max(aspect, 0);
+	aspect = std::min(aspect, 1.f);
+	aspect = std::max(aspect, 0.f);
 	g_aspectValue = aspect;
 	g_aspect = 1.0f + aspect * ((g_defaultAspect) - 1.0f);
 
