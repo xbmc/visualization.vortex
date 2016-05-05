@@ -31,6 +31,7 @@
 #include "XmlDocument.h"
 
 #include <string>
+#include <algorithm>
 
 #include "angelscript.h"
 #include "scriptstring.h"
@@ -295,7 +296,7 @@ int GetRandomPreset()
 {
 	// Pick a random preset from the first 5 and then move that index to the end of the random list
 	// This will bias the randomness so you don't see the same preset again until its back in the top 5
-	int randomIndex = rand() % ( min( 5, g_PresetFiles.NumFiles() ) );
+	int randomIndex = rand() % ( std::min( 5, g_PresetFiles.NumFiles() ) );
 	int nextPreset = g_randomPresetIndices[ randomIndex ];
 
 	for ( int i = randomIndex; i < g_PresetFiles.NumFiles() - 1; i++ )
@@ -652,9 +653,9 @@ void AnalyzeSound()
 	float newBass = ((g_sound.avg[0][0] - g_sound.med_avg[0][0]) / g_sound.med_avg[0][0]) * 2;
 	float newMiddle = ((g_sound.avg[0][1] - g_sound.med_avg[0][1]) / g_sound.med_avg[0][1]) * 2;
 	float newTreble = ((g_sound.avg[0][2] - g_sound.med_avg[0][2]) / g_sound.med_avg[0][2]) * 2;
-	newBass = max(min(newBass, 1.0f), -1.0f);
-	newMiddle = max(min(newMiddle, 1.0f), -1.0f);
-	newTreble = max(min(newTreble, 1.0f), -1.0f);
+	newBass = std::max(std::min(newBass, 1.0f), -1.0f);
+	newMiddle = std::max(std::min(newMiddle, 1.0f), -1.0f);
+	newTreble = std::max(std::min(newTreble, 1.0f), -1.0f);
 
 
 	float avg_mix;
@@ -666,9 +667,9 @@ void AnalyzeSound()
 	g_middle = g_middle*avg_mix + newMiddle*(1-avg_mix);
 	g_treble = g_treble*avg_mix + newTreble*(1-avg_mix);
 
-	g_bass =   max(min(g_bass,   1.0f), -1.0f);
-	g_middle = max(min(g_middle, 1.0f), -1.0f);
-	g_treble = max(min(g_treble, 1.0f), -1.0f);
+	g_bass =   std::max(std::min(g_bass,   1.0f), -1.0f);
+	g_middle = std::max(std::min(g_middle, 1.0f), -1.0f);
+	g_treble = std::max(std::min(g_treble, 1.0f), -1.0f);
 }
 
 namespace
@@ -680,8 +681,8 @@ namespace
 
 float GetSpecLeft(int index)
 {
-	index = min(index, 511);
-	index = max(index, 0);
+	index = std::min(index, 511);
+	index = std::max(index, 0);
 
 	index = (int)((index / 511.0f) * 350.0f);
 
@@ -690,8 +691,8 @@ float GetSpecLeft(int index)
 
 float GetSpecRight(int index)
 {
-	index = min(index, 511);
-	index = max(index, 0);
+	index = std::min(index, 511);
+	index = std::max(index, 0);
 	index = (int)((index / 511.0f) * 350.0f);
 
 	return g_sound.rightBigSpecAvg[index];
