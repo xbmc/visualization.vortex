@@ -37,7 +37,7 @@
 #include "scriptstring.h"
 
 #include "DebugConsole.h"
-#include "kodi/xbmc_vis_types.h"
+#include "xbmc_vis_types.h"
 
 // Effects
 #include "Map.h"
