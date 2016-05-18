@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <addon
   id="visualization.vortex"
-  version="1.5.0"
+  version="1.6.0"
   name="Vortex"
   provider-name="Team-Kodi">
   <extension
     point="xbmc.player.musicviz"
-    library_windx="visualization.vortex.dll"/>
+    library_@PLATFORM@="@LIBRARY_FILENAME@"/>
   <extension point="xbmc.addon.metadata">
     <summary lang="af">Vortex Visualisasie van die XBOX paket</summary>
     <summary lang="ar">تصور دوامة من حزمة XBOX</summary>
@@ -53,6 +53,6 @@
     <summary lang="th">การแสดง Vortex จาก XBOX package</summary>
     <summary lang="tr">XBOX paketinden Vortex Görsel Öğe</summary>
     <summary lang="zh">来自 XBOX 组件包的旋涡可视化效果</summary>
-    <platform>windx</platform>
+    <platform>@PLATFORM@</platform>
   </extension>
 </addon>
