@@ -4674,7 +4674,7 @@ void asCCompiler::ImplicitConversionConstant(asSExprContext *from, const asCData
 		else if( from->type.dataType.IsUnsignedType() && from->type.dataType.GetSizeInMemoryDWords() == 2 )
 		{
 			// TODO: MSVC6 doesn't permit UINT64 to double
-			double fc = double((signed)from->type.qwordValue);
+			double fc = double((asINT64)from->type.qwordValue);
 
 			if( asQWORD(fc) != from->type.qwordValue )
 			{
