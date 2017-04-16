@@ -35,7 +35,7 @@
 //
 
 #include "as_atomic.h"
-#include "platform/threads/atomics.h"
+#include <p8-platform/threads/atomics.h>
 
 BEGIN_AS_NAMESPACE
 
@@ -98,13 +98,13 @@ BEGIN_AS_NAMESPACE
 
 asDWORD asCAtomic::atomicInc()
 {
-	return PLATFORM::atomic_inc((LONG*)&value);
+	return P8PLATFORM::atomic_inc((LONG*)&value);
 }
 
 asDWORD asCAtomic::atomicDec()
 {
 	asASSERT(value > 0);
-	return PLATFORM::atomic_dec((LONG*)&value);
+	return P8PLATFORM::atomic_dec((LONG*)&value);
 }
 
 #elif defined(AS_LINUX) || defined(AS_BSD)
