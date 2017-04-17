@@ -1,1 +1,0 @@
-platform http://mirrors.kodi.tv/build-deps/sources/platform-1.0.9.tar.gz
