@@ -1,1 +1,31 @@
+# build artifacts
+build/
+obj-x86_64-linux-gnu/
+visualization.vortex/addon.xml
 src/shaders/*.inc
+
+# commonly used editors
+# vim
+*.swp
+
+# Eclipse
+*.project
+*.cproject
+.classpath
+*.sublime-*
+.settings/
+
+# KDevelop 4
+*.kdev4
+
+# gedit
+*~
+
+# CLion
+/.idea
+
+# clion
+.idea/
+
+# KDev
+*.kdev4
