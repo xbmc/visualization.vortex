@@ -23,7 +23,7 @@
 #include "Vortex.h"
 
 #include "xbmc_vis_dll.h"
-#include "xbmc_addon_cpp_dll.h"
+#include "xbmc_addon_dll.h"
 
 Vortex* g_Vortex = NULL;
 extern char g_pluginPath[];
