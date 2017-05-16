@@ -155,15 +155,6 @@ extern "C" void ADDON_Destroy()
 	ADDON_Stop();
 }
 
-//-- HasSettings --------------------------------------------------------------
-// Returns true if this add-on use settings
-// !!! Add-on master function !!!
-//-----------------------------------------------------------------------------
-extern "C" bool ADDON_HasSettings()
-{
-	return true;
-}
-
 //-- GetStatus ---------------------------------------------------------------
 // Returns the current Status of this visualisation
 // !!! Add-on master function !!!
@@ -171,16 +162,6 @@ extern "C" bool ADDON_HasSettings()
 extern "C" ADDON_STATUS ADDON_GetStatus()
 {
 	return ADDON_STATUS_OK;
-}
-
-extern "C" unsigned int ADDON_GetSettings(ADDON_StructSetting*** sSet)
-{
-	return 0;
-}
-
-extern "C" void ADDON_FreeSettings()
-{
-
 }
 
 extern "C" ADDON_STATUS ADDON_SetSetting(const char* id, const void* value)
@@ -242,11 +223,4 @@ extern "C" ADDON_STATUS ADDON_SetSetting(const char* id, const void* value)
 extern "C"   unsigned int GetSubModules(char ***presets)
 {
   return 0; // this vis supports 0 sub modules
-}
-
-//-- Announce -----------------------------------------------------------------
-// Receive announcements from XBMC
-//-----------------------------------------------------------------------------
-extern "C" void ADDON_Announce(const char *flag, const char *sender, const char *message, const void *data)
-{
 }
