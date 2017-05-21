@@ -36,7 +36,7 @@ extern "C" ADDON_STATUS ADDON_Create(void* hdl, void* props)
 	if (!props)
 		return ADDON_STATUS_UNKNOWN;
 
-	VIS_PROPS* visprops = (VIS_PROPS*)props;
+	AddonProps_Visualization* visprops = (AddonProps_Visualization*)props;
 	strcpy(g_pluginPath, visprops->presets);
 
 	g_Vortex = new Vortex;
@@ -50,7 +50,7 @@ extern "C" void Start( int iChannels, int iSamplesPerSec, int iBitsPerSample, co
 	g_Vortex->Start( iChannels, iSamplesPerSec, iBitsPerSample, szSongName );
 }
 
-extern "C" void ADDON_Stop()
+extern "C" void Stop()
 {
 	if ( g_Vortex )
 	{
@@ -152,7 +152,7 @@ extern "C" bool IsLocked()
 //-----------------------------------------------------------------------------
 extern "C" void ADDON_Destroy()
 {
-	ADDON_Stop();
+	Stop();
 }
 
 //-- GetStatus ---------------------------------------------------------------
