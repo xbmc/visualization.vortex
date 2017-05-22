@@ -109,6 +109,68 @@ set(VORTEX_SOURCES src/VortexXBMC.cpp
                    src/effects/Tunnel.cpp
                    src/effects/VoicePrint.cpp)
 
+set(VORTEX_HEADERS src/angelscript/add_on/scriptstring.h
+                   src/angelscript/include/angelscript.h
+                   src/angelscript/source/as_array.h
+                   src/angelscript/source/as_arrayobject.h
+                   src/angelscript/source/as_atomic.h
+                   src/angelscript/source/as_builder.h
+                   src/angelscript/source/as_bytecode.h
+                   src/angelscript/source/as_callfunc.h
+                   src/angelscript/source/as_compiler.h
+                   src/angelscript/source/as_configgroup.h
+                   src/angelscript/source/as_config.h
+                   src/angelscript/source/as_context.h
+                   src/angelscript/source/as_criticalsection.h
+                   src/angelscript/source/as_datatype.h
+                   src/angelscript/source/as_debug.h
+                   src/angelscript/source/as_gc.h
+                   src/angelscript/source/as_generic.h
+                   src/angelscript/source/as_map.h
+                   src/angelscript/source/as_memory.h
+                   src/angelscript/source/as_module.h
+                   src/angelscript/source/as_objecttype.h
+                   src/angelscript/source/as_outputbuffer.h
+                   src/angelscript/source/as_parser.h
+                   src/angelscript/source/as_property.h
+                   src/angelscript/source/as_restore.h
+                   src/angelscript/source/as_scriptcode.h
+                   src/angelscript/source/as_scriptengine.h
+                   src/angelscript/source/as_scriptfunction.h
+                   src/angelscript/source/as_scriptnode.h
+                   src/angelscript/source/as_scriptobject.h
+                   src/angelscript/source/as_string.h
+                   src/angelscript/source/as_string_util.h
+                   src/angelscript/source/as_texts.h
+                   src/angelscript/source/as_thread.h
+                   src/angelscript/source/as_tokendef.h
+                   src/angelscript/source/as_tokenizer.h
+                   src/angelscript/source/as_typeinfo.h
+                   src/angelscript/source/as_variablescope.h
+                   src/core/CommonStates.h
+                   src/core/dds.h
+                   src/core/DDSTextureLoader.h
+                   src/core/DebugConsole.h
+                   src/core/DemandCreate.h
+                   src/core/DirectXHelpers.h
+                   src/core/EffectBase.h
+                   src/core/fft.h
+                   src/core/Mesh.h
+                   src/core/Preset.h
+                   src/core/Renderer.h
+                   src/core/Shader.h
+                   src/core/SharedResourcePool.h
+                   src/core/TextureDX.h
+                   src/core/Texture.h
+                   src/core/Vortex.h
+                   src/core/WICTextureLoader.h
+                   src/core/XBMCTypes.h
+                   src/core/XmlDocument.h
+                   src/core/XMMatrixStack.h
+                   src/effects/Map.h
+                   src/effects/Tunnel.h
+                   src/effects/VoicePrint.h)
+
 add_definitions(-D_USRDLL -DVORTEX_EXPORTS -D_CRT_NONSTDC_NO_DEPRECATE)
 add_definitions(-D_WIN32_WINNT=0x0600 -DNTDDI_VERSION=0x06000000 -D_WINDOWS)
 remove_definitions(-DNOMINMAX)
