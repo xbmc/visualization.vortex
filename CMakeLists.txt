@@ -13,7 +13,7 @@ set(DEPLIBS winmm.lib ${p8-platform_LIBRARIES} ${kodiplatform_LIBRARIES})
 include_directories(src/angelscript/add_on
                     src/angelscript/include
                     src/core src/effects src/shaders
-                    ${KODI_INCLUDE_DIR}
+                    ${KODI_INCLUDE_DIR}/.. # Hack way with "/..", need bigger Kodi cmake rework to match right include ways (becomes done in future)
                     ${p8-latform_INCLUDE_DIRS}
                     ${kodiplatform_INCLUDE_DIRS})
 

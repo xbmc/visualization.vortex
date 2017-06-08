@@ -19,6 +19,7 @@
 
 #ifndef _VORTEX_H_
 
+#include <string>
 #include <d3d11_1.h>
 
 class asIScriptEngine;
@@ -59,15 +60,15 @@ public:
 	void Shutdown();
 	void AudioData( const float* pAudioData, int iAudioDataLength, float* pFreq, int iFreqDataLength );
 	void Render();
-	void UpdateTrack( VisTrack* pVisTrack );
-	void UpdateAlbumArt( char* artFilename );
+	void UpdateTrack( const VisTrack* pVisTrack );
+	void UpdateAlbumArt( const char* artFilename );
 	void LoadNextPreset();
 	void LoadPreviousPreset();
 	void LoadRandomPreset();
 	void LoadPreset( int PresetId );
 
 	int GetCurrentPresetIndex();
-	int GetPresets( char*** Presets );
+    bool GetPresets(std::vector<std::string>& presets);
 
 	UserSettings& GetUserSettings();
 	void LoadSettings();
