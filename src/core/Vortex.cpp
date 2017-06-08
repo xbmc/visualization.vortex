@@ -64,7 +64,7 @@ public:
 		Rating = 0;
 	}
 
-	void SetFromVisTrack(VisTrack* pVisTrack)
+	void SetFromVisTrack(const VisTrack* pVisTrack)
 	{
 		Title = pVisTrack->title;
 		Artist = pVisTrack->artist;
@@ -105,39 +105,16 @@ class FileHolder
 {
 public:
 	FileHolder() :
-		m_FilenameAddresses( NULL ),
-		m_AllFilenames( NULL )
 	{
 	
 	}
 
 	~FileHolder()
 	{
-		if ( m_AllFilenames )
-		{
-			delete[] m_AllFilenames;
-		}
-
-		if ( m_FilenameAddresses )
-		{
-			delete m_FilenameAddresses;
-		}
 	}
 
 	void GetFiles( const std::string fileDir, const std::string fileExt )
 	{
-		if ( m_AllFilenames )
-		{
-			delete[] m_AllFilenames;
-			m_AllFilenames = NULL;
-		}
-
-		if ( m_FilenameAddresses )
-		{
-			delete m_FilenameAddresses;
-			m_FilenameAddresses = NULL;
-		}
-
 		m_Filenames.clear();
     std::string path = fileDir + "*." + fileExt;
 
@@ -169,37 +146,10 @@ public:
 	}
 
 	int NumFiles() { return m_Filenames.size(); }
-
-	char** GetAllFilenames()
-	{
-		if ( m_AllFilenames == NULL )
-		{
-			int totalFilenameLength = 0;
-			for( int i = 0; i < NumFiles(); i++ )
-			{
-				totalFilenameLength += m_Filenames[ i ].length() - 3;
-			}
-			totalFilenameLength += 1;
-			m_AllFilenames = new char[ totalFilenameLength ];
-			m_FilenameAddresses = new char*[ NumFiles() ];
-
-			int currentOffset = 0;
-			for( int i = 0; i < NumFiles(); i++ )
-			{
-				strncpy_s( &m_AllFilenames[ currentOffset ], totalFilenameLength - currentOffset, m_Filenames[ i ].c_str(), m_Filenames[ i ].length() - 4 );
-				m_FilenameAddresses[ i ] = &m_AllFilenames[ currentOffset ];
-				currentOffset += m_Filenames[ i ].length() - 3;
-			}
-			m_AllFilenames[ currentOffset ] = '\0';
-
-		}
-
-		return m_FilenameAddresses;
-	}
+	const std::vector<std::string>& GetAllFilenames() { return m_Filenames; }
 
 private:
   std::vector<std::string>	m_Filenames;
-	char*			m_AllFilenames;
 	char**			m_FilenameAddresses;
 };
 
@@ -404,7 +354,7 @@ void Vortex::Start( int iChannels, int iSamplesPerSec, int iBitsPerSample, const
 {
 }
 
-void Vortex::UpdateTrack( VisTrack* pVisTrack )
+void Vortex::UpdateTrack( const VisTrack* pVisTrack )
 {
 	g_TrackInfo.SetFromVisTrack( pVisTrack );
 
@@ -1412,7 +1362,7 @@ bool Vortex::InitAngelScript()
 	return true;
 }
 
-void Vortex::UpdateAlbumArt( char* artFilename )
+void Vortex::UpdateAlbumArt( const char* artFilename )
 {
 	SAFE_RELEASE( g_albumArt );
 	g_albumArt = Renderer::LoadTexture( artFilename );
@@ -1432,6 +1382,12 @@ int Vortex::GetPresets( char*** Presets )
 {
 	*Presets = g_PresetFiles.GetAllFilenames();
 	return g_PresetFiles.NumFiles();
+}
+
+bool Vortex::GetPresets(std::vector<std::string>& presets)
+{
+  presets = g_PresetFiles.GetAllFilenames();
+  return true;
 }
 
 void Vortex::LoadNextPreset()
