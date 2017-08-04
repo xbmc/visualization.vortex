@@ -18,203 +18,190 @@
  */
 
 #include <windows.h>
+#include <kodi/addon-instance/Visualization.h>
 #include <io.h>
 #include <vector>
 #include "Vortex.h"
 
-#include "xbmc_vis_dll.h"
-#include "xbmc_addon_dll.h"
+class CVisualizationVortex
+  : public kodi::addon::CAddonBase
+  , public kodi::addon::CInstanceVisualization
+{
+public:
+  virtual ~CVisualizationVortex();
 
-Vortex* g_Vortex = NULL;
-extern char g_pluginPath[];
+  virtual ADDON_STATUS Create() override;
+  virtual bool Start(int channels, int samplesPerSec, int bitsPerSample, std::string songName) override;
+  virtual void Stop() override;
+  virtual void Render() override;
+  virtual bool GetPresets(std::vector<std::string>& presets) override;
+  virtual int GetActivePreset() override;
+  virtual bool IsLocked() override;
+  virtual bool PrevPreset() override;
+  virtual bool NextPreset() override;
+  virtual bool LoadPreset(int select) override;
+  virtual bool RandomPreset() override;
+  virtual bool LockPreset(bool lockUnlock) override;
+  virtual void AudioData(const float* audioData, int audioDataLength, float *freqData, int freqDataLength) override;
+  virtual ADDON_STATUS SetSetting(const std::string& settingName, const kodi::CSettingValue& settingValue) override;
+  virtual bool UpdateTrack(const VisTrack &track) override;
+  virtual bool UpdateAlbumart(std::string albumart) override;
+private:
+  Vortex* m_Vortex{ nullptr };
+  std::string g_pluginPath;
+};
+
 
 // settings vector
 //StructSetting** g_structSettings;
 
-extern "C" ADDON_STATUS ADDON_Create(void* hdl, void* props)
+CVisualizationVortex::~CVisualizationVortex()
 {
-	if (!props)
-		return ADDON_STATUS_UNKNOWN;
-
-	AddonProps_Visualization* visprops = (AddonProps_Visualization*)props;
-	strcpy(g_pluginPath, visprops->presets);
-
-	g_Vortex = new Vortex;
-	g_Vortex->Init(reinterpret_cast<ID3D11DeviceContext*>(visprops->device), visprops->x, visprops->y, visprops->width, visprops->height, visprops->pixelRatio);
-
-	return ADDON_STATUS_NEED_SAVEDSETTINGS;
+  if ( m_Vortex )
+  {
+    m_Vortex->Shutdown();
+    delete m_Vortex;
+    m_Vortex = NULL;
+  }
 }
 
-extern "C" void Start( int iChannels, int iSamplesPerSec, int iBitsPerSample, const char* szSongName )
+ADDON_STATUS CVisualizationVortex::Create()
 {
-	g_Vortex->Start( iChannels, iSamplesPerSec, iBitsPerSample, szSongName );
+  g_pluginPath = Presets();
+
+  m_Vortex = new Vortex;
+
+  UserSettings& userSettings = m_Vortex->GetUserSettings();
+  userSettings.RandomPresetsEnabled = kodi::GetSettingBoolean("RandomPresets");
+  userSettings.TimeBetweenPresets = (float)(kodi::GetSettingInt("TimeBetweenPresets") * 5 + 5);
+  userSettings.TimeBetweenPresetsRand = (float)(kodi::GetSettingInt("AdditionalRandomTime") * 5);
+  userSettings.TransitionsEnabled = kodi::GetSettingBoolean("EnableTransitions");
+  userSettings.StopFirstPreset = kodi::GetSettingBoolean("StopFirstPreset");
+  userSettings.ShowFPS = kodi::GetSettingBoolean("ShowFPS");
+  userSettings.ShowDebugConsole = kodi::GetSettingBoolean("ShowDebugConsole");
+  userSettings.ShowAudioAnalysis = kodi::GetSettingBoolean("ShowAudioAnalysis");
+  userSettings.PresetLocked = kodi::GetSettingBoolean("LockPreset");
+
+  m_Vortex->Init(reinterpret_cast<ID3D11DeviceContext*>(Device()), X(), Y(), Width(), Height(), PixelRatio());
+
+  return ADDON_STATUS_OK;
 }
 
-extern "C" void Stop()
+bool CVisualizationVortex::Start(int channels, int samplesPerSec, int bitsPerSample, std::string songName)
 {
-	if ( g_Vortex )
-	{
-		g_Vortex->Shutdown();
-		delete g_Vortex;
-		g_Vortex = NULL;
-	}
+  m_Vortex->Start( channels, samplesPerSec, bitsPerSample, songName.c_str() );
+  return true;
 }
 
-extern "C" void AudioData(const float* pAudioData, int iAudioDataLength, float *pFreqData, int iFreqDataLength)
+void CVisualizationVortex::Stop()
 {
-	g_Vortex->AudioData( pAudioData, iAudioDataLength, pFreqData, iFreqDataLength );
+  if ( m_Vortex )
+  {
+    m_Vortex->Shutdown();
+    delete m_Vortex;
+    m_Vortex = NULL;
+  }
 }
 
-extern "C" void Render()
+void CVisualizationVortex::AudioData(const float* pAudioData, int iAudioDataLength, float *pFreqData, int iFreqDataLength)
 {
-	g_Vortex->Render();
+  m_Vortex->AudioData( pAudioData, iAudioDataLength, pFreqData, iFreqDataLength );
 }
 
-extern "C" void GetInfo(VIS_INFO* pInfo)
+bool CVisualizationVortex::UpdateTrack(const VisTrack & track)
 {
-	pInfo->bWantsFreq = false;
-	pInfo->iSyncDelay = 0;
+  m_Vortex->UpdateTrack(track);
+  return true;
 }
 
-extern "C"   bool OnAction(long action, const void *param)
+bool CVisualizationVortex::UpdateAlbumart(std::string albumart)
 {
-	bool handled = true;
-	if( action == VIS_ACTION_UPDATE_TRACK )
-	{
-		VisTrack* visTrack = (VisTrack*) param;
-		g_Vortex->UpdateTrack( visTrack );
-	}
-	else if( action == VIS_ACTION_UPDATE_ALBUMART )
-	{
-		g_Vortex->UpdateAlbumArt( ( char* ) param );
-	}
-	else if (action == VIS_ACTION_NEXT_PRESET)
-	{
-		g_Vortex->LoadNextPreset();
-	}
-	else if (action == VIS_ACTION_PREV_PRESET)
-	{
-		g_Vortex->LoadPreviousPreset();
-	}
-	else if (action == VIS_ACTION_LOAD_PRESET && param)
-	{
-		g_Vortex->LoadPreset( (*(int *)param) );
-	}
-	else if (action == VIS_ACTION_LOCK_PRESET)
-	{
-		g_Vortex->GetUserSettings().PresetLocked = !g_Vortex->GetUserSettings().PresetLocked;
-	}
-	else if (action == VIS_ACTION_RANDOM_PRESET)
-	{
-		g_Vortex->LoadRandomPreset();
-	}
-	else
-	{
-		handled = false;
-	}
-
-	return handled;
+  m_Vortex->UpdateAlbumArt((char*)albumart.c_str());
+  return true;
 }
 
-extern "C" unsigned int GetPresets(char ***presets)
+void CVisualizationVortex::Render()
 {
-	if( g_Vortex == NULL )
-	{
-		return 0;
-	}
-	return g_Vortex->GetPresets( presets );
+  m_Vortex->Render();
 }
+
+bool CVisualizationVortex::GetPresets(std::vector<std::string>& presets)
+{
+  if( m_Vortex == NULL )
+  {
+    return 0;
+  }
+  return m_Vortex->GetPresets( presets ) > 0;
+}
+
 //-- GetPreset ----------------------------------------------------------------
 // Return the index of the current playing preset
 //-----------------------------------------------------------------------------
-extern "C" unsigned GetPreset()
+int CVisualizationVortex::GetActivePreset()
 {
-	if ( g_Vortex)
-		return g_Vortex->GetCurrentPresetIndex();
-	return 0;
+  if (m_Vortex)
+    return m_Vortex->GetCurrentPresetIndex();
+  return 0;
 }
-
 
 //-- IsLocked -----------------------------------------------------------------
 // Returns true if this add-on use settings
 //-----------------------------------------------------------------------------
-extern "C" bool IsLocked()
+bool CVisualizationVortex::IsLocked()
 {
-	if ( g_Vortex )
-		return g_Vortex->GetUserSettings().PresetLocked;
-	else
-		return false;
+  if (m_Vortex)
+    return m_Vortex->GetUserSettings().PresetLocked;
+  else
+    return false;
 }
 
-//-- Destroy-------------------------------------------------------------------
-// Do everything before unload of this add-on
-// !!! Add-on master function !!!
-//-----------------------------------------------------------------------------
-extern "C" void ADDON_Destroy()
+ADDON_STATUS CVisualizationVortex::SetSetting(const std::string & settingName, const kodi::CSettingValue & settingValue)
 {
-	Stop();
-}
+  if ( settingName.empty() || settingValue.empty() || m_Vortex == NULL )
+    return ADDON_STATUS_UNKNOWN;
 
-//-- GetStatus ---------------------------------------------------------------
-// Returns the current Status of this visualisation
-// !!! Add-on master function !!!
-//-----------------------------------------------------------------------------
-extern "C" ADDON_STATUS ADDON_GetStatus()
-{
-	return ADDON_STATUS_OK;
-}
+  UserSettings& userSettings = m_Vortex->GetUserSettings();
 
-extern "C" ADDON_STATUS ADDON_SetSetting(const char* id, const void* value)
-{
-	if ( !id || !value || g_Vortex == NULL )
-		return ADDON_STATUS_UNKNOWN;
+  if (settingName == "RandomPresets")
+  {
+    userSettings.RandomPresetsEnabled = settingValue.GetBoolean();
+  }
+  else if (settingName == "TimeBetweenPresets")
+  {
+    userSettings.TimeBetweenPresets = (float)(settingValue.GetInt() * 5 + 5);
+  }
+  else if (settingName == "AdditionalRandomTime")
+  {
+    userSettings.TimeBetweenPresetsRand = (float)(settingValue.GetInt() * 5);
+  }
+  else if (settingName == "EnableTransitions")
+  {
+    userSettings.TransitionsEnabled = settingValue.GetBoolean();
+  }
+  else if (settingName == "StopFirstPreset")
+  {
+    userSettings.StopFirstPreset = settingValue.GetBoolean();
+  }
+  else if (settingName == "ShowFPS")
+  {
+    userSettings.ShowFPS = settingValue.GetBoolean();
+  }
+  else if (settingName == "ShowDebugConsole")
+  {
+    userSettings.ShowDebugConsole = settingValue.GetBoolean();
+  }
+  else if (settingName == "ShowAudioAnalysis")
+  {
+    userSettings.ShowAudioAnalysis = settingValue.GetBoolean();
+  }
+  else if (settingName == "LockPreset")
+  {
+    userSettings.PresetLocked = settingValue.GetBoolean();
+  }
+  else
+    return ADDON_STATUS_UNKNOWN;
 
-	UserSettings& userSettings = g_Vortex->GetUserSettings();
-
-	if (strcmpi(id, "Use Preset") == 0)
-	{
-		OnAction(34, &value);
-	}
-	else if (strcmpi(id, "RandomPresets") == 0)
-	{
-		userSettings.RandomPresetsEnabled = *(bool*)value == 1;
-	}
-	else if (strcmpi(id, "TimeBetweenPresets") == 0)
-	{
-		userSettings.TimeBetweenPresets = (float)(*(int*)value * 5 + 5);
-	}
-	else if (strcmpi(id, "AdditionalRandomTime") == 0)
-	{
-		userSettings.TimeBetweenPresetsRand = (float)(*(int*)value * 5 );
-	}
-	else if (strcmpi(id, "EnableTransitions") == 0)
-	{
-		userSettings.TransitionsEnabled = *(bool*)value == 1;
-	}
-	else if (strcmpi(id, "StopFirstPreset") == 0)
-	{
-		userSettings.StopFirstPreset = *(bool*)value == 1;
-	}
-	else if (strcmpi(id, "ShowFPS") == 0)
-	{
-		userSettings.ShowFPS = *(bool*)value == 1;
-	}
-	else if (strcmpi(id, "ShowDebugConsole") == 0)
-	{
-		userSettings.ShowDebugConsole = *(bool*)value == 1;
-	}
-	else if (strcmpi(id, "ShowAudioAnalysis") == 0)
-	{
-		userSettings.ShowAudioAnalysis = *(bool*)value == 1;
-	}
-  else if (strcmpi(id, "LockPreset") == 0)
-	{
-    userSettings.PresetLocked = *(bool*)value == 1;
-	}
- 	else
- 		return ADDON_STATUS_UNKNOWN;
-
-	return ADDON_STATUS_OK;
+  return ADDON_STATUS_OK;
 }
 
 //-- GetSubModules ------------------------------------------------------------
@@ -224,3 +211,35 @@ extern "C"   unsigned int GetSubModules(char ***presets)
 {
   return 0; // this vis supports 0 sub modules
 }
+
+bool CVisualizationVortex::PrevPreset()
+{
+  m_Vortex->LoadPreviousPreset();
+  return true;
+}
+
+bool CVisualizationVortex::NextPreset()
+{
+  m_Vortex->LoadNextPreset();
+  return true;
+}
+
+bool CVisualizationVortex::LoadPreset(int select)
+{
+  m_Vortex->LoadPreset( select );
+  return true;
+}
+
+bool CVisualizationVortex::RandomPreset()
+{
+  m_Vortex->LoadRandomPreset();
+  return true;
+}
+
+bool CVisualizationVortex::LockPreset(bool lockUnlock)
+{
+  m_Vortex->GetUserSettings().PresetLocked = lockUnlock;
+  return true;
+}
+
+ADDONCREATOR(CVisualizationVortex) // Don't touch this!

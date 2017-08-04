@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <addon
   id="visualization.vortex"
-  version="1.6.3"
+  version="2.0.0"
   name="Vortex"
   provider-name="Team-Kodi">
   <requires>@ADDON_DEPENDS@</requires>

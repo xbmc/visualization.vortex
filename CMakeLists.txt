@@ -171,8 +171,12 @@ set(VORTEX_HEADERS src/angelscript/add_on/scriptstring.h
                    src/effects/Tunnel.h
                    src/effects/VoicePrint.h)
 
-add_definitions(-D_USRDLL -DVORTEX_EXPORTS -D_CRT_NONSTDC_NO_DEPRECATE)
-add_definitions(-D_WIN32_WINNT=0x0600 -DNTDDI_VERSION=0x06000000 -D_WINDOWS)
+if(CORE_SYSTEM_NAME STREQUAL windowsstore)
+  add_definitions(-DVORTEX_EXPORTS -D_WIN32_WINNT=0x0A00 -D_WINDOWS -D_CRT_NONSTDC_NO_DEPRECATE)
+else()
+  add_definitions(-D_USRDLL -DVORTEX_EXPORTS -D_CRT_NONSTDC_NO_DEPRECATE)
+  add_definitions(-D_WIN32_WINNT=0x0600 -D_WINDOWS)
+endif()
 remove_definitions(-DNOMINMAX)
 
 build_addon(visualization.vortex VORTEX DEPLIBS)

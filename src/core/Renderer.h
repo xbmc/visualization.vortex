@@ -28,6 +28,7 @@
 #include <DirectXMath.h>
 #include "TextureDX.h"
 #include "CommonStates.h"
+#include "DirectXHelpers.h"
 
 enum eBlendMode
 {
@@ -113,9 +114,7 @@ public:
 	static void Colour(float r, float g, float b, float a);
 	static void TexCoord(float u, float v);
 	static void Normal(float nx, float ny, float nz);
-	static void NormalVec(D3DVECTOR& normal);
 	static void Vertex(float x, float y, float z);
-	static void VertexVec(D3DVECTOR& pos);
 
 	static void Cube(float nx, float ny, float nz, float x, float y, float z);
 	static void Sphere(int del_uhol_x, int del_uhol_y, float size);

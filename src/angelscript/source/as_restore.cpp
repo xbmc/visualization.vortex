@@ -996,7 +996,7 @@ void asCRestore::WriteObjectType(asCObjectType* ot)
 
 asCObjectType* asCRestore::ReadObjectType() 
 {
-	asCObjectType *ot;
+	asCObjectType *ot = nullptr;
 	char ch;
 	READ_NUM(ch);
 	if( ch == 'a' )

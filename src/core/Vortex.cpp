@@ -19,6 +19,7 @@
 
 #include <windows.h>
 #include <io.h>
+#include "p8-platform/windows/CharsetConverter.h"
 
 #include "Vortex.h"
 #include "Renderer.h"
@@ -37,7 +38,6 @@
 #include "scriptstring.h"
 
 #include "DebugConsole.h"
-#include "xbmc_vis_types.h"
 
 // Effects
 #include "Map.h"
@@ -64,20 +64,20 @@ public:
 		Rating = 0;
 	}
 
-	void SetFromVisTrack(VisTrack* pVisTrack)
+	void SetFromVisTrack(const VisTrack& pVisTrack)
 	{
-		Title = pVisTrack->title;
-		Artist = pVisTrack->artist;
-		Album = pVisTrack->album;
-		AlbumArtist = pVisTrack->albumArtist;
-		Genre = pVisTrack->genre;
-		Comment = pVisTrack->comment;
-		Lyrics = pVisTrack->lyrics;
-		TrackNumber = pVisTrack->trackNumber;
-		DiscNumber = pVisTrack->discNumber;
-		Duration = pVisTrack->duration;
-		Year = pVisTrack->year;
-		Rating = pVisTrack->rating;
+		Title = pVisTrack.title;
+		Artist = pVisTrack.artist;
+		Album = pVisTrack.album;
+		AlbumArtist = pVisTrack.albumArtist;
+		Genre = pVisTrack.genre;
+		Comment = pVisTrack.comment;
+		Lyrics = pVisTrack.lyrics;
+		TrackNumber = pVisTrack.trackNumber;
+		DiscNumber = pVisTrack.discNumber;
+		Duration = pVisTrack.duration;
+		Year = pVisTrack.year;
+		Rating = pVisTrack.rating;
 	}
 
 	std::string Title;
@@ -104,45 +104,20 @@ char g_AnnouncePath[ MAX_PATH ];
 class FileHolder
 {
 public:
-	FileHolder() :
-		m_FilenameAddresses( NULL ),
-		m_AllFilenames( NULL )
-	{
-	
-	}
-
-	~FileHolder()
-	{
-		if ( m_AllFilenames )
-		{
-			delete[] m_AllFilenames;
-		}
-
-		if ( m_FilenameAddresses )
-		{
-			delete m_FilenameAddresses;
-		}
-	}
+	FileHolder(){	}
+	~FileHolder(){ }
 
 	void GetFiles( const std::string fileDir, const std::string fileExt )
 	{
-		if ( m_AllFilenames )
-		{
-			delete[] m_AllFilenames;
-			m_AllFilenames = NULL;
-		}
-
-		if ( m_FilenameAddresses )
-		{
-			delete m_FilenameAddresses;
-			m_FilenameAddresses = NULL;
-		}
-
 		m_Filenames.clear();
     std::string path = fileDir + "*." + fileExt;
 
 		WIN32_FIND_DATA findData;
-		HANDLE hFind = FindFirstFile( path.c_str(), &findData );
+#ifdef TARGET_WINDOWS_STORE
+		HANDLE hFind = FindFirstFileW( p8::windows::ToW(path).c_str(), &findData );
+#else
+    HANDLE hFind = FindFirstFile(path.c_str(), &findData);
+#endif
 		if ( hFind == INVALID_HANDLE_VALUE )
 		{
 			return;
@@ -150,7 +125,11 @@ public:
 
 		do 
 		{
-			m_Filenames.push_back( findData.cFileName);
+#ifdef TARGET_WINDOWS_STORE
+      m_Filenames.push_back( p8::windows::FromW(findData.cFileName) );
+#else
+      m_Filenames.push_back( findData.cFileName );
+#endif // TARGET_WINDOWS_STORE
 		} while ( FindNextFile( hFind, &findData ) != FALSE );
 
 		FindClose( hFind );
@@ -170,37 +149,13 @@ public:
 
 	int NumFiles() { return m_Filenames.size(); }
 
-	char** GetAllFilenames()
+	void GetAllFilenames(std::vector<std::string>& filenames)
 	{
-		if ( m_AllFilenames == NULL )
-		{
-			int totalFilenameLength = 0;
-			for( int i = 0; i < NumFiles(); i++ )
-			{
-				totalFilenameLength += m_Filenames[ i ].length() - 3;
-			}
-			totalFilenameLength += 1;
-			m_AllFilenames = new char[ totalFilenameLength ];
-			m_FilenameAddresses = new char*[ NumFiles() ];
-
-			int currentOffset = 0;
-			for( int i = 0; i < NumFiles(); i++ )
-			{
-				strncpy_s( &m_AllFilenames[ currentOffset ], totalFilenameLength - currentOffset, m_Filenames[ i ].c_str(), m_Filenames[ i ].length() - 4 );
-				m_FilenameAddresses[ i ] = &m_AllFilenames[ currentOffset ];
-				currentOffset += m_Filenames[ i ].length() - 3;
-			}
-			m_AllFilenames[ currentOffset ] = '\0';
-
-		}
-
-		return m_FilenameAddresses;
+    std::copy(m_Filenames.begin(), m_Filenames.end(), filenames.begin());
 	}
 
 private:
   std::vector<std::string>	m_Filenames;
-	char*			m_AllFilenames;
-	char**			m_FilenameAddresses;
 };
 
 namespace
@@ -404,7 +359,7 @@ void Vortex::Start( int iChannels, int iSamplesPerSec, int iBitsPerSample, const
 {
 }
 
-void Vortex::UpdateTrack( VisTrack* pVisTrack )
+void Vortex::UpdateTrack( const VisTrack& pVisTrack )
 {
 	g_TrackInfo.SetFromVisTrack( pVisTrack );
 
@@ -1021,7 +976,7 @@ void PrintString_Generic(asIScriptGeneric *gen)
 // Function wrapper is needed when native calling conventions are not supported
 void timeGetTime_Generic(asIScriptGeneric *gen)
 {
-	gen->SetReturnDWord(timeGetTime());
+	gen->SetReturnDWord(GetTickCount64());
 }
 
 #define assert(x) (x)
@@ -1045,7 +1000,7 @@ void ConfigureEngine( asIScriptEngine* engine )
 		// be caught when a script is being built, so it is not necessary
 		// to do the verification here as well.
 		r = engine->RegisterGlobalFunction("void Print(string &in)", asFUNCTION(PrintString), asCALL_CDECL); assert( r >= 0 );
-		r = engine->RegisterGlobalFunction("uint GetSystemTime()", asFUNCTION(timeGetTime), asCALL_STDCALL); assert( r >= 0 );
+		r = engine->RegisterGlobalFunction("uint GetSystemTime()", asFUNCTION(GetTickCount64), asCALL_STDCALL); assert( r >= 0 );
 	}
 	else
 	{
@@ -1428,9 +1383,9 @@ UserSettings& Vortex::GetUserSettings()
 	return g_Settings;
 }
 
-int Vortex::GetPresets( char*** Presets )
+int Vortex::GetPresets( std::vector<std::string>& presets )
 {
-	*Presets = g_PresetFiles.GetAllFilenames();
+	g_PresetFiles.GetAllFilenames(presets);
 	return g_PresetFiles.NumFiles();
 }
 
