@@ -34,6 +34,18 @@
 #include <string>
 #include <memory>
 
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_APP)
+typedef enum _D3DPRIMITIVETYPE {
+  D3DPT_POINTLIST = 1,
+  D3DPT_LINELIST = 2,
+  D3DPT_LINESTRIP = 3,
+  D3DPT_TRIANGLELIST = 4,
+  D3DPT_TRIANGLESTRIP = 5,
+  D3DPT_TRIANGLEFAN = 6,
+  D3DPT_FORCE_DWORD = 0x7fffffff, /* force 32-bit size enum */
+} D3DPRIMITIVETYPE;
+#endif
+
 namespace DirectX
 {
     // simliar to std::lock_guard for exception-safe Direct3D 11 resource locking

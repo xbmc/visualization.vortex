@@ -23,6 +23,7 @@
 #include "angelscript.h"
 #include "CommonStates.h"
 #include <algorithm>
+#include "../core/DirectXHelpers.h"
 
 namespace
 {

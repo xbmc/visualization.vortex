@@ -20,9 +20,9 @@
 #ifndef _VORTEX_H_
 
 #include <d3d11_1.h>
+#include <kodi/addon-instance/Visualization.h>
 
 class asIScriptEngine;
-class VisTrack;
 
 struct UserSettings
 {
@@ -59,7 +59,7 @@ public:
 	void Shutdown();
 	void AudioData( const float* pAudioData, int iAudioDataLength, float* pFreq, int iFreqDataLength );
 	void Render();
-	void UpdateTrack( VisTrack* pVisTrack );
+	void UpdateTrack( const VisTrack& pVisTrack );
 	void UpdateAlbumArt( char* artFilename );
 	void LoadNextPreset();
 	void LoadPreviousPreset();
@@ -67,7 +67,7 @@ public:
 	void LoadPreset( int PresetId );
 
 	int GetCurrentPresetIndex();
-	int GetPresets( char*** Presets );
+	int GetPresets( std::vector<std::string>& presets );
 
 	UserSettings& GetUserSettings();
 	void LoadSettings();

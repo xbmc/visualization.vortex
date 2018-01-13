@@ -486,7 +486,7 @@ void Renderer::CreateCubeBuffers()
 
 void Renderer::Exit()
 {
-	DeleteObject( g_hFont );
+	//DeleteObject( g_hFont );
 
   SAFE_RELEASE( g_pPosNormalColUVDeclaration );
 	SAFE_RELEASE( g_pPosColUVDeclaration );
