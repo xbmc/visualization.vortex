@@ -14,7 +14,7 @@ include_directories(src/angelscript/add_on
                     src/angelscript/include
                     src/core src/effects src/shaders
                     ${KODI_INCLUDE_DIR}
-                    ${p8-latform_INCLUDE_DIRS}
+                    ${p8-platform_INCLUDE_DIRS}
                     ${kodiplatform_INCLUDE_DIRS})
 
 set(SHADER_FILES src/shaders/ColorPixelShader.hlsl
