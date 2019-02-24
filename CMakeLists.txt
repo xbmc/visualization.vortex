@@ -6,16 +6,14 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR})
 
 find_package(Kodi REQUIRED)
 find_package(p8-platform REQUIRED)
-find_package(kodiplatform REQUIRED)
 
-set(DEPLIBS winmm.lib ${p8-platform_LIBRARIES} ${kodiplatform_LIBRARIES})
+set(DEPLIBS winmm.lib ${p8-platform_LIBRARIES})
 
 include_directories(src/angelscript/add_on
                     src/angelscript/include
                     src/core src/effects src/shaders
                     ${KODI_INCLUDE_DIR}
-                    ${p8-platform_INCLUDE_DIRS}
-                    ${kodiplatform_INCLUDE_DIRS})
+                    ${p8-platform_INCLUDE_DIRS})
 
 set(SHADER_FILES src/shaders/ColorPixelShader.hlsl
                  src/shaders/ColourRemapPixelShader.hlsl
